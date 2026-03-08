@@ -25,8 +25,9 @@
             </div>
         @endif
 
-        <form action="{{ route('employees.store') }}" method="POST">
-            @csrf
+       <form action="{{ route('employees.store') }}" method="POST">
+    @csrf
+    
             
             <h6 class="text-primary fw-bold border-bottom pb-2 mb-3 mt-2"><i class="bi bi-person-vcard me-2"></i>ข้อมูลส่วนตัว</h6>
             <div class="row g-3">

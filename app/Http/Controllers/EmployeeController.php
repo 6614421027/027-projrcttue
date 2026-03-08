@@ -10,9 +10,15 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $employees = Employee::latest()->paginate(10);
+
+        // ตรวจสอบว่าเป็น API Request หรือไม่
+        if ($request->is('api/*')) {
+            return response()->json($employees, 200);
+        }
+
         return view('employees.index', compact('employees'));
     }
 
@@ -57,15 +63,29 @@ class EmployeeController extends Controller
             'emergency_contact_phone' => 'required|string|max:20',
         ]);
 
-        Employee::create($validatedData);
+        $employee = Employee::create($validatedData);
+
+        // ตรวจสอบว่าเป็น API Request หรือไม่
+        if ($request->is('api/*')) {
+            return response()->json([
+                'message' => 'เพิ่มข้อมูลพนักงานสำเร็จ!',
+                'data' => $employee
+            ], 201);
+        }
 
         return redirect()->route('employees.index')->with('success', 'เพิ่มข้อมูลพนักงานสำเร็จ!');
     }
+
     /**
      * Display the specified resource.
      */
-    public function show(Employee $employee)
+    public function show(Request $request, Employee $employee)
     {
+        // ตรวจสอบว่าเป็น API Request หรือไม่
+        if ($request->is('api/*')) {
+            return response()->json($employee, 200);
+        }
+
         return view('employees.show', compact('employee'));
     }
 
@@ -112,6 +132,14 @@ class EmployeeController extends Controller
 
         $employee->update($validatedData);
 
+        // ตรวจสอบว่าเป็น API Request หรือไม่
+        if ($request->is('api/*')) {
+            return response()->json([
+                'message' => 'อัปเดตข้อมูลสำเร็จ!',
+                'data' => $employee
+            ], 200);
+        }
+
         return redirect()->route('employees.index')
                          ->with('success', 'อัปเดตข้อมูลสำเร็จ!');
     }
@@ -119,9 +147,16 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Employee $employee)
+    public function destroy(Request $request, Employee $employee)
     {
         $employee->delete();
+
+        // ตรวจสอบว่าเป็น API Request หรือไม่
+        if ($request->is('api/*')) {
+            return response()->json([
+                'message' => 'ลบข้อมูลพนักงานสำเร็จ!'
+            ], 200);
+        }
 
         return redirect()->route('employees.index')
                          ->with('success', 'ลบข้อมูลพนักงานสำเร็จ!');
